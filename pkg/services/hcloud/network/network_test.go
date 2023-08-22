@@ -23,6 +23,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 
 	infrav1 "github.com/syself/cluster-api-provider-hetzner/api/v1beta1"
 	"github.com/syself/cluster-api-provider-hetzner/pkg/scope"
@@ -35,8 +36,10 @@ func TestNetwork(t *testing.T) {
 
 var _ = Describe("Test createOpts", func() {
 	var hetznerCluster infrav1.HetznerCluster
+	var cluster clusterv1.Cluster
 	var service Service
 	BeforeEach(func() {
+		cluster.Name = "cluster-1"
 		hetznerCluster.Spec.HCloudNetwork = infrav1.HCloudNetworkSpec{
 			Enabled:         true,
 			CIDRBlock:       "10.0.0.0/16",
@@ -45,7 +48,7 @@ var _ = Describe("Test createOpts", func() {
 		}
 		hetznerCluster.Name = "hetzner-cluster"
 
-		service = Service{&scope.ClusterScope{HetznerCluster: &hetznerCluster}}
+		service = Service{&scope.ClusterScope{HetznerCluster: &hetznerCluster, Cluster: &cluster}}
 	})
 	It("Outputs the correct NetworkCreateOpts", func() {
 		_, network, err := net.ParseCIDR("10.0.0.0/16")
@@ -57,7 +60,7 @@ var _ = Describe("Test createOpts", func() {
 		expectOpts := hcloud.NetworkCreateOpts{
 			Name:    "hetzner-cluster",
 			IPRange: network,
-			Labels:  map[string]string{"caph-cluster-hetzner-cluster": "owned"},
+			Labels:  map[string]string{"caph-cluster-cluster-1": "owned"},
 			Subnets: []hcloud.NetworkSubnet{
 				{
 					IPRange:     subnet,
