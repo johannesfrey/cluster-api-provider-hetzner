@@ -196,6 +196,10 @@ type LoadBalancerTarget struct {
 
 // HCloudNetworkSpec defines the desired state of the HCloud Private Network.
 type HCloudNetworkSpec struct {
+	// ID is the id of the Network to adopt.
+	// +optional
+	ID *int `json:"id,omitempty"`
+
 	// Enabled defines whether the network should be enabled or not
 	Enabled bool `json:"enabled"`
 
@@ -219,7 +223,7 @@ type HCloudNetworkSpec struct {
 // NetworkStatus defines the observed state of the HCloud Private Network.
 type NetworkStatus struct {
 	ID              int               `json:"id,omitempty"`
-	Labels          map[string]string `json:"-"`
+	Labels          map[string]string `json:"labels,omitempty"`
 	AttachedServers []int             `json:"attachedServers,omitempty"`
 }
 
