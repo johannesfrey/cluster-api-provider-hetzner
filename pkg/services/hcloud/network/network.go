@@ -136,6 +136,24 @@ func (s *Service) Delete(ctx context.Context) error {
 }
 
 func (s *Service) findNetwork(ctx context.Context) (*hcloud.Network, error) {
+	// if an ID was provided we want to use the existing Network.
+	id := s.scope.HetznerCluster.Spec.HCloudNetwork.ID
+	if id != nil {
+		network, err := s.scope.HCloudClient.GetNetwork(ctx, *id)
+		if err != nil {
+			hcloudutil.HandleRateLimitExceeded(s.scope.HetznerCluster, err, "GetNetwork")
+			return nil, fmt.Errorf("failed to get network %d: %w", id, err)
+		}
+
+		if network != nil {
+			if len(network.Subnets) > 1 {
+				return nil, fmt.Errorf("multiple subnets not allowed")
+			}
+			s.scope.V(1).Info("found network", "id", network.ID, "name", network.Name, "labels", network.Labels)
+			return network, nil
+		}
+	}
+
 	opts := hcloud.NetworkListOpts{}
 	opts.LabelSelector = utils.LabelsToLabelSelector(s.labels())
 
