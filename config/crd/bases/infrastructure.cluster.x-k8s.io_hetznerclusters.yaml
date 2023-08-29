@@ -185,6 +185,9 @@ spec:
                     description: Enabled defines whether the network should be enabled
                       or not
                     type: boolean
+                  id:
+                    description: ID is the id of the Network to adopt.
+                    type: integer
                   networkZone:
                     default: eu-central
                     description: NetworkZone specifies the HCloud network zone of
@@ -419,6 +422,10 @@ spec:
                     type: array
                   id:
                     type: integer
+                  labels:
+                    additionalProperties:
+                      type: string
+                    type: object
                 type: object
               ready:
                 default: false
