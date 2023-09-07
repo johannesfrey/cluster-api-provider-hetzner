@@ -157,10 +157,28 @@ func (r *HetznerCluster) ValidateUpdate(old runtime.Object) (admission.Warnings,
 		return nil, apierrors.NewBadRequest(fmt.Sprintf("expected an HetznerCluster but got a %T", old))
 	}
 
-	// Network settings are immutable
-	if !reflect.DeepEqual(oldC.Spec.HCloudNetwork, r.Spec.HCloudNetwork) {
+	// Network settings except ID are immutable
+	if !reflect.DeepEqual(oldC.Spec.HCloudNetwork.Enabled, r.Spec.HCloudNetwork.Enabled) {
 		allErrs = append(allErrs,
-			field.Invalid(field.NewPath("spec", "hcloudNetwork"), r.Spec.HCloudNetwork, "field is immutable"),
+			field.Invalid(field.NewPath("spec", "hcloudNetwork", "enabled"), r.Spec.HCloudNetwork.Enabled, "field is immutable"),
+		)
+	}
+
+	if !reflect.DeepEqual(oldC.Spec.HCloudNetwork.CIDRBlock, r.Spec.HCloudNetwork.CIDRBlock) {
+		allErrs = append(allErrs,
+			field.Invalid(field.NewPath("spec", "hcloudNetwork", "cidrBlock"), r.Spec.HCloudNetwork.CIDRBlock, "field is immutable"),
+		)
+	}
+
+	if !reflect.DeepEqual(oldC.Spec.HCloudNetwork.SubnetCIDRBlock, r.Spec.HCloudNetwork.SubnetCIDRBlock) {
+		allErrs = append(allErrs,
+			field.Invalid(field.NewPath("spec", "hcloudNetwork", "subnetCIDRBlock"), r.Spec.HCloudNetwork.SubnetCIDRBlock, "field is immutable"),
+		)
+	}
+
+	if !reflect.DeepEqual(oldC.Spec.HCloudNetwork.NetworkZone, r.Spec.HCloudNetwork.NetworkZone) {
+		allErrs = append(allErrs,
+			field.Invalid(field.NewPath("spec", "hcloudNetwork", "networkZone"), r.Spec.HCloudNetwork.NetworkZone, "field is immutable"),
 		)
 	}
 
