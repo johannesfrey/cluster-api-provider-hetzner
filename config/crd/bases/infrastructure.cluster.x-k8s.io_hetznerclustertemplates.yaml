@@ -227,6 +227,10 @@ spec:
                             description: Enabled defines whether the network should
                               be enabled or not.
                             type: boolean
+                          id:
+                            description: ID is the id of the Network to adopt.
+                            format: int64
+                            type: integer
                           networkZone:
                             default: eu-central
                             description: |-
